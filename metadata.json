@@ -1,0 +1,5 @@
+{
+  "name": "Golf AI",
+  "description": "Get instant, AI-powered feedback on your golf swing. Upload a video to analyze your technique, identify areas for improvement, and receive personalized drills to lower your handicap.",
+  "requestFramePermissions": []
+}
