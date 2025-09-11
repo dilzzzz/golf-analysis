@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -7,9 +8,10 @@ import CourseFinder from './components/CourseFinder';
 import ShotTracker from './components/ShotTracker';
 import InstructionalContent from './components/InstructionalContent';
 import DiscussionForum from './components/DiscussionForum';
+import ClubRecommender from './components/ClubRecommender';
 import type { SwingAnalysis } from './types';
 
-export type AppState = 'LANDING' | 'ANALYZING' | 'FIND_COURSES' | 'SHOT_TRACKING' | 'INSTRUCTIONAL_CONTENT' | 'COMMUNITY';
+export type AppState = 'LANDING' | 'ANALYZING' | 'FIND_COURSES' | 'SHOT_TRACKING' | 'INSTRUCTIONAL_CONTENT' | 'COMMUNITY' | 'CLUB_RECOMMENDER';
 
 const ANALYSIS_LIMIT = 5;
 const STORAGE_KEY = 'golfAiUsage';
@@ -84,6 +86,8 @@ const App: React.FC = () => {
 
   const renderContent = () => {
     switch(appState) {
+      case 'CLUB_RECOMMENDER':
+        return <ClubRecommender />;
       case 'FIND_COURSES':
         return <CourseFinder />;
       case 'SHOT_TRACKING':

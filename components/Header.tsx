@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { MapPinIcon, ChartBarIcon, VideoIcon, BookOpenIcon, UserGroupIcon } from './icons';
+import { MapPinIcon, ChartBarIcon, VideoIcon, BookOpenIcon, UserGroupIcon, AdjustmentsHorizontalIcon } from './icons';
 import type { AppState } from '../App';
 
 interface HeaderProps {
@@ -43,13 +44,17 @@ const Header: React.FC<HeaderProps> = ({ appState, onNavigate }) => {
               <VideoIcon className="h-5 w-5 mr-2" />
               Swing Analyzer
             </NavButton>
-            <NavButton onClick={() => onNavigate('FIND_COURSES')} isActive={appState === 'FIND_COURSES'}>
-              <MapPinIcon className="h-5 w-5 mr-2" />
-              Find Courses
+            <NavButton onClick={() => onNavigate('CLUB_RECOMMENDER')} isActive={appState === 'CLUB_RECOMMENDER'}>
+              <AdjustmentsHorizontalIcon className="h-5 w-5 mr-2" />
+              AI Caddie
             </NavButton>
              <NavButton onClick={() => onNavigate('SHOT_TRACKING')} isActive={appState === 'SHOT_TRACKING'}>
               <ChartBarIcon className="h-5 w-5 mr-2" />
               Shot Tracker
+            </NavButton>
+            <NavButton onClick={() => onNavigate('FIND_COURSES')} isActive={appState === 'FIND_COURSES'}>
+              <MapPinIcon className="h-5 w-5 mr-2" />
+              Find Courses
             </NavButton>
             <NavButton onClick={() => onNavigate('INSTRUCTIONAL_CONTENT')} isActive={appState === 'INSTRUCTIONAL_CONTENT'}>
               <BookOpenIcon className="h-5 w-5 mr-2" />

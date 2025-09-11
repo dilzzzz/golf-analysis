@@ -64,3 +64,11 @@ export interface Post {
   likes: number;
   unlikes: number;
 }
+
+export interface ClubRecommendation {
+  club: string;
+  confidence: 'High' | 'Medium' | 'Low';
+  reasoning: string;
+  alternativeClub?: string;
+  alternativeReasoning?: string;
+}
