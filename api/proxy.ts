@@ -1,3 +1,4 @@
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI } from '@google/genai';
 import type { SwingAnalysis, Course, GroundingChunk, InstructionalContent, ClubRecommendation } from '../types';
@@ -50,7 +51,12 @@ const analyzeSwing = async (base64Frames: string[]): Promise<SwingAnalysis> => {
         contents: [{ parts: [{ text: prompt }, ...imageParts] }],
         config: { responseMimeType: 'application/json', responseSchema: swingAnalysisSchema }
     });
-    return JSON.parse(response.text) as SwingAnalysis;
+    
+    const text = response.text;
+    if (!text) {
+        throw new Error("The AI model did not return a valid analysis.");
+    }
+    return JSON.parse(text) as SwingAnalysis;
 };
 
 const findCourses = async (location: string): Promise<{ courses: Course[], sources: GroundingChunk[] }> => {
@@ -62,8 +68,13 @@ const findCourses = async (location: string): Promise<{ courses: Course[], sourc
         config: { tools: [{ googleSearch: {} }] }
     });
     
+    const text = response.text;
+    if (!text) {
+        throw new Error("The AI model did not return any course data.");
+    }
+    
     const sources = (response.candidates?.[0]?.groundingMetadata?.groundingChunks || []) as GroundingChunk[];
-    const jsonText = response.text.match(/```json\n([\s\S]*?)\n```/)?.[1] || response.text;
+    const jsonText = text.match(/```json\n([\s\S]*?)\n```/)?.[1] || text;
     const result = JSON.parse(jsonText);
     return { courses: result.courses as Course[], sources };
 };
@@ -77,8 +88,13 @@ const findInstructionalContent = async (query: string): Promise<{ content: Instr
         config: { tools: [{ googleSearch: {} }] }
     });
 
+    const text = response.text;
+    if (!text) {
+        throw new Error("The AI model did not return any content.");
+    }
+
     const sources = (response.candidates?.[0]?.groundingMetadata?.groundingChunks || []) as GroundingChunk[];
-    const jsonText = response.text.match(/```json\n([\s\S]*?)\n```/)?.[1] || response.text;
+    const jsonText = text.match(/```json\n([\s\S]*?)\n```/)?.[1] || text;
     const result = JSON.parse(jsonText);
     return { content: result.content as InstructionalContent[], sources };
 };
@@ -92,7 +108,12 @@ const generatePersonalizedTips = async (areasForImprovement: { title: string; de
         contents: [{ parts: [{ text: prompt }] }],
         config: { responseMimeType: 'application/json', responseSchema: tipsSchema }
     });
-    const result = JSON.parse(response.text);
+    
+    const text = response.text;
+    if (!text) {
+        throw new Error("The AI model did not return any tips.");
+    }
+    const result = JSON.parse(text);
     return result.tips as string[];
 };
 
@@ -105,7 +126,12 @@ const getClubRecommendation = async (conditions: { distance: number; lie: string
         contents: [{ parts: [{ text: prompt }] }],
         config: { responseMimeType: 'application/json', responseSchema: clubRecommendationSchema }
     });
-    return JSON.parse(response.text) as ClubRecommendation;
+    
+    const text = response.text;
+    if (!text) {
+        throw new Error("The AI model did not return a club recommendation.");
+    }
+    return JSON.parse(text) as ClubRecommendation;
 };
 
 // --- Main Handler ---
