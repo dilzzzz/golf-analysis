@@ -52,10 +52,11 @@ const analyzeSwing = async (base64Frames: string[]): Promise<SwingAnalysis> => {
         config: { responseMimeType: 'application/json', responseSchema: swingAnalysisSchema }
     });
     
-    if (!response.text) {
+    const text = response.text;
+    if (!text) {
         throw new Error("The AI model did not return a valid analysis. This could be due to safety filters or an API issue.");
     }
-    return JSON.parse(response.text) as SwingAnalysis;
+    return JSON.parse(text) as SwingAnalysis;
 };
 
 const findCourses = async (location: string): Promise<{ courses: Course[], sources: GroundingChunk[] }> => {
@@ -67,14 +68,27 @@ const findCourses = async (location: string): Promise<{ courses: Course[], sourc
         config: { tools: [{ googleSearch: {} }] }
     });
     
-    if (!response.text) {
+    const text = response.text;
+    if (!text) {
         throw new Error("The AI model did not return any course data. This could be due to safety filters or an API issue.");
     }
     
     const sources = (response.candidates?.[0]?.groundingMetadata?.groundingChunks || []) as GroundingChunk[];
-    const jsonText = response.text.match(/```json\n([\s\S]*?)\n```/)?.[1] || response.text;
-    const result = JSON.parse(jsonText);
-    return { courses: result.courses as Course[], sources };
+    
+    let jsonText = text;
+    const match = jsonText.match(/```json\n([\s\S]*?)\n```/);
+    if (match && match[1]) {
+        jsonText = match[1];
+    }
+    
+    try {
+        const result = JSON.parse(jsonText);
+        const courses = result.courses && Array.isArray(result.courses) ? result.courses : [];
+        return { courses: courses as Course[], sources };
+    } catch (e) {
+        console.error("Failed to parse JSON from AI response:", jsonText);
+        throw new Error("The AI model returned data in an unexpected format.");
+    }
 };
 
 const findInstructionalContent = async (query: string): Promise<{ content: InstructionalContent[], sources: GroundingChunk[] }> => {
@@ -86,14 +100,27 @@ const findInstructionalContent = async (query: string): Promise<{ content: Instr
         config: { tools: [{ googleSearch: {} }] }
     });
 
-    if (!response.text) {
+    const text = response.text;
+    if (!text) {
         throw new Error("The AI model did not return any content. This could be due to safety filters or an API issue.");
     }
 
     const sources = (response.candidates?.[0]?.groundingMetadata?.groundingChunks || []) as GroundingChunk[];
-    const jsonText = response.text.match(/```json\n([\s\S]*?)\n```/)?.[1] || response.text;
-    const result = JSON.parse(jsonText);
-    return { content: result.content as InstructionalContent[], sources };
+    
+    let jsonText = text;
+    const match = jsonText.match(/```json\n([\s\S]*?)\n```/);
+    if (match && match[1]) {
+        jsonText = match[1];
+    }
+
+    try {
+        const result = JSON.parse(jsonText);
+        const content = result.content && Array.isArray(result.content) ? result.content : [];
+        return { content: content as InstructionalContent[], sources };
+    } catch (e) {
+        console.error("Failed to parse JSON from AI response:", jsonText);
+        throw new Error("The AI model returned data in an unexpected format.");
+    }
 };
 
 const generatePersonalizedTips = async (areasForImprovement: { title: string; description: string }[]): Promise<string[]> => {
@@ -106,10 +133,11 @@ const generatePersonalizedTips = async (areasForImprovement: { title: string; de
         config: { responseMimeType: 'application/json', responseSchema: tipsSchema }
     });
     
-    if (!response.text) {
+    const text = response.text;
+    if (!text) {
         throw new Error("The AI model did not return any tips. This could be due to safety filters or an API issue.");
     }
-    const result = JSON.parse(response.text);
+    const result = JSON.parse(text);
     return result.tips as string[];
 };
 
@@ -123,10 +151,11 @@ const getClubRecommendation = async (conditions: { distance: number; lie: string
         config: { responseMimeType: 'application/json', responseSchema: clubRecommendationSchema }
     });
     
-    if (!response.text) {
+    const text = response.text;
+    if (!text) {
         throw new Error("The AI model did not return a club recommendation. This could be due to safety filters or an API issue.");
     }
-    return JSON.parse(response.text) as ClubRecommendation;
+    return JSON.parse(text) as ClubRecommendation;
 };
 
 // --- Main Handler ---
