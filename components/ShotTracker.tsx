@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+
+import React, { useState, useEffect, useMemo } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import type { GolfRound, Shot, ShotOutcome } from '../types';
-import { ChartBarIcon, TargetIcon, PlusCircleIcon } from './icons';
+import { TargetIcon, PlusCircleIcon } from './icons';
 
 const GOLF_CLUBS = [
     'Driver', '3-Wood', '5-Wood', 'Hybrid',

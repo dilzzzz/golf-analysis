@@ -16,11 +16,9 @@ const SwingAnalyzer: React.FC<SwingAnalyzerProps> = ({ videoFile, onAnalysisComp
   const [frames, setFrames] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [videoUrl, setVideoUrl] = useState<string>('');
 
   useEffect(() => {
     const objectUrl = URL.createObjectURL(videoFile);
-    setVideoUrl(objectUrl);
     
     const video = document.createElement('video');
     video.src = objectUrl;
