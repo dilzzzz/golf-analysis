@@ -52,11 +52,10 @@ const analyzeSwing = async (base64Frames: string[]): Promise<SwingAnalysis> => {
         config: { responseMimeType: 'application/json', responseSchema: swingAnalysisSchema }
     });
     
-    const text = response.text;
-    if (!text) {
-        throw new Error("The AI model did not return a valid analysis.");
+    if (!response.text) {
+        throw new Error("The AI model did not return a valid analysis. This could be due to safety filters or an API issue.");
     }
-    return JSON.parse(text) as SwingAnalysis;
+    return JSON.parse(response.text) as SwingAnalysis;
 };
 
 const findCourses = async (location: string): Promise<{ courses: Course[], sources: GroundingChunk[] }> => {
@@ -68,13 +67,12 @@ const findCourses = async (location: string): Promise<{ courses: Course[], sourc
         config: { tools: [{ googleSearch: {} }] }
     });
     
-    const text = response.text;
-    if (!text) {
-        throw new Error("The AI model did not return any course data.");
+    if (!response.text) {
+        throw new Error("The AI model did not return any course data. This could be due to safety filters or an API issue.");
     }
     
     const sources = (response.candidates?.[0]?.groundingMetadata?.groundingChunks || []) as GroundingChunk[];
-    const jsonText = text.match(/```json\n([\s\S]*?)\n```/)?.[1] || text;
+    const jsonText = response.text.match(/```json\n([\s\S]*?)\n```/)?.[1] || response.text;
     const result = JSON.parse(jsonText);
     return { courses: result.courses as Course[], sources };
 };
@@ -88,13 +86,12 @@ const findInstructionalContent = async (query: string): Promise<{ content: Instr
         config: { tools: [{ googleSearch: {} }] }
     });
 
-    const text = response.text;
-    if (!text) {
-        throw new Error("The AI model did not return any content.");
+    if (!response.text) {
+        throw new Error("The AI model did not return any content. This could be due to safety filters or an API issue.");
     }
 
     const sources = (response.candidates?.[0]?.groundingMetadata?.groundingChunks || []) as GroundingChunk[];
-    const jsonText = text.match(/```json\n([\s\S]*?)\n```/)?.[1] || text;
+    const jsonText = response.text.match(/```json\n([\s\S]*?)\n```/)?.[1] || response.text;
     const result = JSON.parse(jsonText);
     return { content: result.content as InstructionalContent[], sources };
 };
@@ -109,11 +106,10 @@ const generatePersonalizedTips = async (areasForImprovement: { title: string; de
         config: { responseMimeType: 'application/json', responseSchema: tipsSchema }
     });
     
-    const text = response.text;
-    if (!text) {
-        throw new Error("The AI model did not return any tips.");
+    if (!response.text) {
+        throw new Error("The AI model did not return any tips. This could be due to safety filters or an API issue.");
     }
-    const result = JSON.parse(text);
+    const result = JSON.parse(response.text);
     return result.tips as string[];
 };
 
@@ -127,11 +123,10 @@ const getClubRecommendation = async (conditions: { distance: number; lie: string
         config: { responseMimeType: 'application/json', responseSchema: clubRecommendationSchema }
     });
     
-    const text = response.text;
-    if (!text) {
-        throw new Error("The AI model did not return a club recommendation.");
+    if (!response.text) {
+        throw new Error("The AI model did not return a club recommendation. This could be due to safety filters or an API issue.");
     }
-    return JSON.parse(text) as ClubRecommendation;
+    return JSON.parse(response.text) as ClubRecommendation;
 };
 
 // --- Main Handler ---
